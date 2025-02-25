@@ -1,5 +1,6 @@
 JDK21
 
+For Backend
 Every Services Must Have
 ```
 eureka.instance.hostname=localhost
@@ -32,4 +33,25 @@ In VSCode Install Java Extensions and Spring Extensions and CLick On Play Button
 Check Status on Eureka for running java service
 ```
 http://127.0.0.1:8761/
+```
+
+
+For FrontEnd
+
+Run following command in client and admin folder
+
+```
+pnpm install
+```
+
+You can also run 
+```
+npm install
+```
+
+But recommend ```pnpm```
+
+After finished above step , Run
+```
+pnpm run dev
 ```
