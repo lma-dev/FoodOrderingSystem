@@ -10,7 +10,7 @@ The Below is a Must
 ```
 eureka.client.register-with-eureka=true
 ```
-Dont Forgot to Update
+Dont Forget to Update
 
 ```
 spring.jpa.show-sql=true
