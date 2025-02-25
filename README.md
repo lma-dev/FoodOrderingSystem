@@ -55,3 +55,6 @@ After finished above step , Run
 ```
 pnpm run dev
 ```
+
+result
+https://drive.google.com/file/d/1iL1XetwRYPmX5YUJbCqejqffEpMhzpsr/view?usp=sharing
