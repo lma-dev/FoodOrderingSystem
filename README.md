@@ -1,4 +1,4 @@
-JDK22
+JDK21
 
 Every Services Must Have
 ```
@@ -20,21 +20,16 @@ spring.datasource.username=root
 spring.datasource.password=
 ````
 
-and 
-Run Service-registry
-Run All Services
-And Last
-Run ApiGateway
-
-
-To Run via Maven
+Running File Order
 ```
-mvn spring-boot:run
+Run Service-registry
+Run ApiGateway
+Run All Services
 ```
 
 In VSCode Install Java Extensions and Spring Extensions and CLick On Play Button
 
-Check Status With Eureka
+Check Status on Eureka for running java service
 ```
 http://127.0.0.1:8761/
 ```
