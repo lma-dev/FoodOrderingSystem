@@ -24,8 +24,8 @@ spring.datasource.password=
 Running File Order
 ```
 Run Service-registry
-Run ApiGateway
 Run All Services
+Run ApiGateway
 ```
 
 In VSCode Install Java Extensions and Spring Extensions and CLick On Play Button
