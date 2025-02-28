@@ -7,6 +7,7 @@ const PlaceOrder = () => {
   const { cartDetails, url, userId, token, orderDetails } =
     useContext(StoreContext);
 
+  console.log("dfdf", orderDetails);
   // State to track form data
   const [formData, setFormData] = useState({
     firstName: "",
@@ -48,6 +49,17 @@ const PlaceOrder = () => {
       .map((item) => `${item.title} x ${item.quantity}`)
       .join(", ");
   };
+
+  const orderArrayList = () => {
+    console.log(orderDetails);
+    return orderDetails.map((item) => ({
+      productId: item.productId,
+      title: item.title,
+      quantity: item.quantity,
+      category: item.category,
+    }));
+  };
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
     try {
@@ -63,11 +75,14 @@ const PlaceOrder = () => {
         cartId: cartId,
         totalAmount: cartDetails.totalAmount,
         orderDetails: orderSummary(),
+        orderArrayList: orderArrayList(),
         status: "PENDING",
         address: `${formData.firstName} ${formData.lastName}, ${formData.street} ${formData.city} ${formData.state}, ${formData.zipCode} ${formData.country}, ${formData.phone}`,
         createdAt: new Date().toISOString(),
       };
+      console.log(orderData);
       localStorage.setItem("orderData", JSON.stringify(orderData));
+
       const paymentResponse = await axios.post(
         `${url}/payments/checkout`,
         {

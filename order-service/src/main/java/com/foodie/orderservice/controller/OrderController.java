@@ -1,13 +1,15 @@
 package com.foodie.orderservice.controller;
 
-
 import com.foodie.orderservice.model.Orders;
+import com.foodie.orderservice.model.RecommendOrders;
+import com.foodie.orderservice.dto.OrderDTO;
 import com.foodie.orderservice.model.OrderStatus;
 import com.foodie.orderservice.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,9 +38,15 @@ public class OrderController {
     }
 
     @PostMapping()
-    public ResponseEntity<Orders> createOrder(@RequestBody Orders orders) {
+    public ResponseEntity<Orders> createOrder(@RequestBody OrderDTO orders) {
         Orders createdOrders = orderService.createOrder(orders);
         return ResponseEntity.ok(createdOrders);
+    }
+
+    @GetMapping("/recommended-orders")
+    public ResponseEntity<List<RecommendOrders>> getAllRecommendedOrders() {
+        List<RecommendOrders> recommendOrders = orderService.getRecommendOrdersList();
+        return ResponseEntity.ok(recommendOrders);
     }
 
     // update order status

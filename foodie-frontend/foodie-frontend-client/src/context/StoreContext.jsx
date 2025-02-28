@@ -16,6 +16,7 @@ const StoreContextProvider = (props) => {
 
   const [orderDetails, setOrderDetails] = useState([]);
 
+  console.log("token", orderDetails);
   const addToCart = async (productId, quantity, price) => {
     if (token === "") {
       setShowAlert(true);

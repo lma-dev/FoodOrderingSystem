@@ -1,11 +1,14 @@
 package com.foodie.orderservice.service;
 
+import com.foodie.orderservice.dto.OrderArrayListDTO;
+import com.foodie.orderservice.dto.OrderDTO;
 import com.foodie.orderservice.feign.NotificationServiceClient;
 import com.foodie.orderservice.feign.UserServiceClient;
 import com.foodie.orderservice.model.*;
 
 import com.foodie.orderservice.repository.CartProductRepository;
 import com.foodie.orderservice.repository.CartRepository;
+import com.foodie.orderservice.repository.OrderArrayRepository;
 import com.foodie.orderservice.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,28 +32,52 @@ public class OrderService {
     private NotificationServiceClient notificationServiceClient;
 
     @Autowired
+    private OrderArrayRepository orderArrayRepository;
+
+    @Autowired
     private UserServiceClient userServiceClient;
 
-
-
     @Transactional
-    public Orders createOrder(Orders orders) {
-        orders.setCreatedAt(new Date());
-        orders.setStatus(OrderStatus.PENDING);
-        Cart cart = cartRepository.findById(orders.getCartId()).orElseThrow(()-> new RuntimeException("Cart not found"));
+    public Orders createOrder(OrderDTO orders) {
+        Cart cart = cartRepository.findById(orders.getCartId())
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
         cart.getCartProducts().clear();
         cart.setTotalAmount(0.0);
         cartRepository.save(cart);
-        ResponseEntity<?> userResponse = userServiceClient.getEmail(orders.getUserId() + "");
-        if (userResponse.getStatusCode().is2xxSuccessful()) {
-            Map<String, Object> responseBody = (Map<String, Object>) userResponse.getBody();
-            if (responseBody != null && responseBody.containsKey("email")) {
-                String email = (String) responseBody.get("email");
-                notificationServiceClient.createAndSendNotification("Foodie, Payment Successfully", "Your order has been placed. Order Status: PENDING", email);
-            }
+
+        // ResponseEntity<?> userResponse =
+        // userServiceClient.getEmail(orders.getUserId() + "");
+        // if (userResponse.getStatusCode().is2xxSuccessful()) {
+        // Map<String, Object> responseBody = (Map<String, Object>)
+        // userResponse.getBody();
+        // if (responseBody != null && responseBody.containsKey("email")) {
+        // String email = (String) responseBody.get("email");
+        // notificationServiceClient.createAndSendNotification("Foodie, Payment
+        // Successfully",
+        // "Your order has been placed. Order Status: PENDING", email);
+        // }
+        // }
+        Orders order = new Orders();
+        order.setUserId(orders.getUserId());
+        order.setCartId(orders.getCartId());
+        order.setStatus(OrderStatus.PENDING);
+        order.setTotalAmount(orders.getTotalAmount());
+        order.setOrderDetails(orders.getOrderDetails());
+        order.setCreatedAt(new Date());
+        int quantiInteger = 0;
+        for (OrderArrayListDTO ordersArray : orders.getOrderArrayList()) {
+            RecommendOrders roD = orderArrayRepository.findByProductId(ordersArray.getProductId())
+                    .orElse(new RecommendOrders());
+            quantiInteger = ordersArray.getQuantity() + roD.getQuantity();
+            roD.setTitle(ordersArray.getTitle());
+            roD.setQuantity(quantiInteger);
+            roD.setCategory(ordersArray.getCategory());
+            roD.setProductId(ordersArray.getProductId());
+            roD.setCreatedAt(new Date());
+            orderArrayRepository.save(roD);
         }
 
-        return orderRepository.save(orders);
+        return orderRepository.save(order);
     }
 
     public Orders updateOrderStatus(int orderId, OrderStatus status) {
@@ -61,7 +88,8 @@ public class OrderService {
             Map<String, Object> responseBody = (Map<String, Object>) userResponse.getBody();
             if (responseBody != null && responseBody.containsKey("email")) {
                 String email = (String) responseBody.get("email");
-                notificationServiceClient.createAndSendNotification("Foodie, Order Status Changed", "Your Order Status: "+status, email);
+                notificationServiceClient.createAndSendNotification("Foodie, Order Status Changed",
+                        "Your Order Status: " + status, email);
             }
         }
         return orderRepository.save(orders);
@@ -69,6 +97,10 @@ public class OrderService {
 
     public Orders getOrderById(int orderId) {
         return orderRepository.findById(orderId).get();
+    }
+
+    public List<RecommendOrders> getRecommendOrdersList() {
+        return orderArrayRepository.findAllOrdersSortedByQuantity();
     }
 
     public List<Orders> getOrdersByUserId(int userId) {

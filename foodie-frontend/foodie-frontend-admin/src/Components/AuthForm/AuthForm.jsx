@@ -28,13 +28,17 @@ const AuthForm = () => {
       const response = await axios.post(`${url}/admin/login`, formData);
       if (response.status === 200) {
         setError("");
-        console.log(response.data);
+        alert("Login successful.");
         setToken(response.data.token);
         localStorage.setItem("token", response.data.token);
         setIsLoggedIn(true);
         navigate("/dashboard");
       }
-    } catch (error) {}
+    } catch (error) {
+      setError(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+    }
   };
 
   const handleRegisterSubmit = (e) => {
@@ -57,7 +61,7 @@ const AuthForm = () => {
 
       if (response.status === 200) {
         setError("");
-        console.log(response.data);
+        alert("Registration successful. Please login to continue.");
         setToken(response.data.token);
         setIsLoggedIn(true);
       }

@@ -4,7 +4,7 @@ import { assets } from "../../assets/assets";
 import { useState } from "react";
 import { StoreContext } from "../../context/StoreContext";
 
-const FoodItem = ({ id, name, price, description, image }) => {
+const FoodItem = ({ id, name, price, description, image, recommended }) => {
   const [itemCount, setItemCount] = useState(1);
   const { addToCart } = useContext(StoreContext);
 
@@ -36,8 +36,15 @@ const FoodItem = ({ id, name, price, description, image }) => {
         </div>
       </div>
       <div className="food-item-info">
-        <div className="food-item-name-rating">
-          <p>{name}</p>
+        <div className="flex justify-between">
+          <div className="food-item-name-rating">
+            <p>{name}</p>
+          </div>
+          <div>
+            <span className="text-sm text-red-400">
+              {recommended ? "Popular" : ""}
+            </span>
+          </div>
         </div>
         <img src={assets.rating_starts} alt="" />
         <p className="food-item-desc">{description}</p>

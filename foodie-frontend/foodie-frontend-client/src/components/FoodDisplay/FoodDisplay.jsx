@@ -15,13 +15,49 @@ const FoodDisplay = ({ category }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let newUrl = url + "/food/products";
-        const response = await axios.get(newUrl);
-        fetchProductsImages(response.data);
-        setProducts(response.data);
-        setIsLoading(false);
+        setIsLoading(true);
+
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // Fetch both APIs concurrently
+        const [allProductsRes, recommendedRes] = await Promise.all([
+          axios.get(`${url}/food/products`, { headers }),
+          axios.get(`${url}/orders/recommended-orders`, { headers }),
+        ]);
+
+        const allProducts = allProductsRes.data;
+        const recommendedProducts = recommendedRes.data;
+
+        // Create a map of recommended product IDs with their quantities
+        const recommendedMap = new Map(
+          recommendedProducts.map((p) => [p.productId, p.quantity])
+        );
+
+        // Update product list with "recommended" flag and quantity
+        let updatedProducts = allProducts.map((product) => ({
+          ...product,
+          recommended: recommendedMap.has(product.id),
+          quantity: recommendedMap.get(product.id) || 0,
+        }));
+
+        // Sort: Recommended products first, then by quantity
+        if (recommendedProducts.length > 0) {
+          updatedProducts.sort((a, b) => {
+            if (a.recommended && b.recommended) return b.quantity - a.quantity; // Sort by quantity
+            return b.recommended - a.recommended; // Move recommended to the top
+          });
+        }
+
+        // Remove quantity field if not needed
+        updatedProducts = updatedProducts.map(({ quantity, ...rest }) => rest);
+
+        setProducts(updatedProducts);
+        fetchProductsImages(updatedProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -76,6 +112,7 @@ const FoodDisplay = ({ category }) => {
                 description={product.description}
                 price={product.price}
                 image={imageUrls[product.id]}
+                recommended={product.recommended}
               />
             );
           }

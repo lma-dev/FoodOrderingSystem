@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -12,19 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Orders {
+public class RecommendOrders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int userId;
-    private int cartId;
-    private double totalAmount;
-    private String orderDetails;
-    private List<Object> orderArrayList;
-
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status;
-    private String address;
+    private String title;
+    private int quantity;
+    private int productId;
+    private String category;
     private Date createdAt;
 }

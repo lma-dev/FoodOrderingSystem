@@ -46,6 +46,7 @@ const Cart = () => {
             title: productResponse.data.name,
             price: product.productPrice,
             quantity: product.quantity,
+            category: productResponse.data.category,
             total: product.productPrice * product.quantity,
           };
         })
