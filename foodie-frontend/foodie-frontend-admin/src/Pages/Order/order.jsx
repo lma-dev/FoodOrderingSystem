@@ -8,6 +8,7 @@ const Order = () => {
   const { url, token } = useContext(AdminContext);
   const [orders, setOrders] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false); // Track API call status
+  const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
     try {
@@ -25,6 +26,10 @@ const Order = () => {
   }, [url, token]);
 
   function countItems(orderDetails) {
+    // Ensure orderDetails is a valid string before splitting
+    if (!orderDetails || typeof orderDetails !== "string") {
+      return 0;
+    }
     return orderDetails.split(",").length;
   }
 
@@ -56,11 +61,10 @@ const Order = () => {
     }
   };
 
-  const [loading, setLoading] = React.useState(false);
-  function handleClick() {
+  const handleClick = () => {
     setLoading(true);
-    fetchOrders().then(() => setLoading(false));
-  }
+    fetchOrders().finally(() => setLoading(false));
+  };
 
   return (
     <div className="order">
@@ -80,10 +84,12 @@ const Order = () => {
           Fetch data
         </Button>
       </div>
+
       <div className="order-list">
         {orders.length === 0 ? (
           <div className="no-orders"> No orders available</div>
         ) : null}
+
         {orders.map((order) => (
           <div key={order.id} className="order-item">
             <div className="order-header">
@@ -92,15 +98,23 @@ const Order = () => {
               </div>
               <div className="order-details">
                 <p className="order-items">{order.orderDetails}</p>
-                <p className="order-info">
-                  {order.address.split(",").slice(0, 1).join(",").trim()}
-                </p>
-                <p className="order-info">
-                  {order.address.split(",").slice(1, 3).join(",").trim()}
-                </p>
-                <p className="order-info">
-                  {order.address.split(",").slice(3, 4).join(",").trim()}
-                </p>
+
+                {/* Add a check for null address */}
+                {order.address ? (
+                  <>
+                    <p className="order-info">
+                      {order.address.split(",").slice(0, 1).join(",").trim()}
+                    </p>
+                    <p className="order-info">
+                      {order.address.split(",").slice(1, 3).join(",").trim()}
+                    </p>
+                    <p className="order-info">
+                      {order.address.split(",").slice(3, 4).join(",").trim()}
+                    </p>
+                  </>
+                ) : (
+                  <p className="order-info">Address not available</p>
+                )}
               </div>
               <div className="order-summary">
                 <p>Items: {countItems(order.orderDetails)}</p>
