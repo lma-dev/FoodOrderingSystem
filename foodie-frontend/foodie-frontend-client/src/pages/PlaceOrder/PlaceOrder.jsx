@@ -80,7 +80,6 @@ const PlaceOrder = () => {
         address: `${formData.firstName} ${formData.lastName}, ${formData.street} ${formData.city} ${formData.state}, ${formData.zipCode} ${formData.country}, ${formData.phone}`,
         createdAt: new Date().toISOString(),
       };
-      console.log(orderData);
       localStorage.setItem("orderData", JSON.stringify(orderData));
 
       const paymentResponse = await axios.post(
