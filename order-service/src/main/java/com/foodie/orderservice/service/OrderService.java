@@ -88,8 +88,9 @@ public class OrderService {
             Map<String, Object> responseBody = (Map<String, Object>) userResponse.getBody();
             if (responseBody != null && responseBody.containsKey("email")) {
                 String email = (String) responseBody.get("email");
-                notificationServiceClient.createAndSendNotification("Foodie, Order Status Changed",
-                        "Your Order Status: " + status, email);
+                // notificationServiceClient.createAndSendNotification("Foodie, Order Status
+                // Changed",
+                // "Your Order Status: " + status, email);
             }
         }
         return orderRepository.save(orders);
